@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{room_name}} | Chat Room</title>
+    <link rel="stylesheet" href="{% static 'chat/chat.css' %}">
+</head>
+<body>
+    {{ user_name|json_script:"user-name" }}
+    {{ room_name|json_script:"room-name" }}
+
+    <div class="container">
+        <header>
+            <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+            <h1> {{room_name}} ({{user_name}})</h1>
+        </header>
+        <div class="content">
+            <div class="sidebar" id="sidebar">
+                <h2>Users:</h2>
+                <ul>
+                    <li>Joe</li>
+                    <li>Dan</li>
+                </ul>
+                <button class="leave-button">Leave</button>
+            </div>
+            <div class="chat-area">
+                <div class="messages" id="chat-log">
+                    <!-- Message will appaer here dynamically -->
+                </div>
+                <div class="input-area">
+                    <input type="text" id="chat-message-input" placeholder="Message...">
+                    <button id="chat-message-submit">Send Message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('show-sidebar');
+        }
+    </script>
+    <script src="{% static 'chat/js/ws.js' %}"></script>
+</body>
+</html>

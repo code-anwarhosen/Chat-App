@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Chat Room</title>
+    <link rel="stylesheet" href="{% static 'chat/room.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="form-box">
+            <h1>Join Group</h1>
+            <form action="chat-room/" method="post">
+                {% csrf_token %}
+                <input type="text" name="username" placeholder="Your Name" required>
+                <select name="room_name" required>
+                    <option class="room-option" selected="selected" disabled="disabled" value="">--Choose Group--</option>
+                    <option class="room-option" value="Friends">Friends</option>
+                    <option class="room-option" value="Normal">Normal</option>
+                </select>
+                <button type="submit">Join Room</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+
+<!-- chat/templates/chat/index.html -->
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Chat Rooms</title>
+</head>
+<body>
+    What chat room would you like to enter?<br>
+    <input id="room-name-input" type="text" size="100"><br>
+    <input id="room-name-submit" type="button" value="Enter">
+
+    <script>
+        document.querySelector('#room-name-input').focus();
+        document.querySelector('#room-name-input').onkeyup = function(e) {
+            if (e.key === 'Enter') {  // enter, return
+                document.querySelector('#room-name-submit').click();
+            }
+        };
+
+        document.querySelector('#room-name-submit').onclick = function(e) {
+            var roomName = document.querySelector('#room-name-input').value;
+            window.location.pathname = '/chat/' + roomName + '/';
+        };
+    </script>
+</body>
+</html> -->
