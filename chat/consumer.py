@@ -13,23 +13,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
         self.connected_user += 1
-        await self.channel_layer.group_send(
-            self.room_group_name, {
-                'type': 'all_users',
-                'user_count': self.connected_user
-            }
-        )
+        # await self.channel_layer.group_send(
+        #     self.room_group_name, {
+        #         'type': 'all_users',
+        #         'user_count': self.connected_user
+        #     }
+        # )
     
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
-        self.connected_user -= 1
-        await self.channel_layer.group_send(
-            self.room_group_name, {
-                'type': 'all_users',
-                'user_count': self.connected_user
-            }
-        )
+        # self.connected_user -= 1
+        # await self.channel_layer.group_send(
+        #     self.room_group_name, {
+        #         'type': 'all_users',
+        #         'user_count': self.connected_user
+        #     }
+        # )
     
     async def receive(self, text_data):
         json_text_data = json.loads(text_data)

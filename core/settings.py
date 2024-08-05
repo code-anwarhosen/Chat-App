@@ -6,6 +6,8 @@ SECRET_KEY = 'django-insecure-9upv*5xl167jgs!$2zyc%mqgr6rqc&so55=65kld1bn!1xt2f6
 DEBUG = False
 
 ALLOWED_HOSTS = ['anwar-chatzone.onrender.com', '127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://anwar-chatzone.onrender.com', 'http://anwar-chatzone.onrender.com']
+
 INSTALLED_APPS = [
     'daphne',
     'django.contrib.admin',

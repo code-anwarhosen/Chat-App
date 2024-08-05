@@ -11,12 +11,17 @@ const chatSocket = new WebSocket(
 
 chatSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
+
+    const now = new Date();
+    const currentDate = now.toISOString().split('T')[0];
+    const currentTime = now.toTimeString().split(' ')[0];
+    const dateTime = String(currentTime) + " " + String(currentDate);
     
     var senderClass = userName === data.user_name ? 'sender' : '';
     const msgHTML = `<div class="message ${senderClass}">
                         <div class="username">${data.user_name}</div>
                         <div class="text">${data.message}</div>
-                        <div class="timestamp">26/07/2022, 19:52:17</div>
+                        <div class="timestamp">${String(currentTime)}</div>
                     </div>`
     document.querySelector('#chat-log').innerHTML += msgHTML;
 };
