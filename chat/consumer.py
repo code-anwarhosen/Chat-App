@@ -2,6 +2,7 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 class ChatConsumer(AsyncWebsocketConsumer):
+    connected_user = 0
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         if ' ' in self.room_name:
@@ -10,9 +11,25 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
+
+        self.connected_user += 1
+        await self.channel_layer.group_send(
+            self.room_group_name, {
+                'type': 'all_users',
+                'user_count': self.connected_user
+            }
+        )
     
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+
+        self.connected_user -= 1
+        await self.channel_layer.group_send(
+            self.room_group_name, {
+                'type': 'all_users',
+                'user_count': self.connected_user
+            }
+        )
     
     async def receive(self, text_data):
         json_text_data = json.loads(text_data)
@@ -33,4 +50,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'user_name': user_name,
             'message': msg,
+        }))
+    
+    async def all_users(self, event):
+        user_count = event['user_count']
+        await self.send(text_data=json.dumps({
+            'user_count': user_count
         }))
