@@ -107,12 +107,14 @@ header h1 {
 }
 
 .messages {
-    flex: 1;
+    height: calc(100vh - 150px); /* Ensure height fits within view */
     overflow-y: auto;
     padding: 20px;
     box-sizing: border-box;
     background-color: #00008b;
     color: #ffffff;
+    display: flex;
+    flex-direction: column; /* Ensure messages start from the bottom */
 }
 
 .message {

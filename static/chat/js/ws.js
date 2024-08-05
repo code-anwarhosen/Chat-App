@@ -24,7 +24,9 @@ chatSocket.onmessage = function(e) {
                         <div class="text">${data.message}</div>
                         <div class="timestamp">${String(currentTime)}</div>
                     </div>`
-    document.querySelector('#chat-log').innerHTML += msgHTML;
+    var chatLog = document.getElementById('chat-log');
+    chatLog.innerHTML += msgHTML;
+    chatLog.scrollTop = chatLog.scrollHeight;
 };
 
 chatSocket.onclose = function(e) {
