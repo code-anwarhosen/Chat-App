@@ -18,25 +18,13 @@
             font-size: 14px;
             font-weight: normal;
         }
-        #player {
-            height: 40%;
-            width: 100%;
-            cursor: pointer;
-        }
-        #player:hover {
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
     {{ user_name|json_script:"user-name" }}
     {{ room_name|json_script:"room-name" }}
 
-    <script src="https://www.youtube.com/iframe_api"></script>
-    
     <div class="container">
-        <div id="player"></div>
-
         <h2 id="user-emoji">Group: {{room_name}} <span id="active"></span></h2>
         <header>
             <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
@@ -53,7 +41,7 @@
             </div>
             <div class="chat-area">
                 <div class="messages" id="chat-log">
-                    <!-- Messages will appear here dynamically -->
+                    <!-- Message will appaer here dynamically -->
                 </div>
                 <div class="input-area">
                     <input type="text" id="chat-message-input" placeholder="Message..." required>
@@ -66,10 +54,8 @@
     <script>
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('show-sidebar');
-            console.log("toggle clicked");
         }
     </script>
     <script src="{% static 'chat/js/ws.js' %}"></script>
-    <script src="{% static 'chat/js/videoPlayer.js' %}"></script>
 </body>
 </html>

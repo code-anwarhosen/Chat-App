@@ -30,7 +30,6 @@ header {
     justify-content: space-between;
     align-items: center;
     position: relative;
-    z-index: 1002;
 }
 
 header h1 {
@@ -49,7 +48,7 @@ header h1 {
     font-size: 18px;
     cursor: pointer;
     position: absolute;
-    z-index: 1003;
+    left: 10px;
 }
 
 .toggle-btn:hover {
@@ -68,10 +67,8 @@ header h1 {
     width: 250px;
     padding: 20px;
     box-sizing: border-box;
-    position: fixed; /* Fixed position to keep it on top */
     display: none; /* Hidden by default */
-    z-index: 1001; /* Ensure it's below the header and toggle button */
-    transition: transform 0.3s ease; /* Smooth transition */
+    flex-shrink: 0;
 }
 
 .sidebar h2, .sidebar h3 {
@@ -110,7 +107,7 @@ header h1 {
 }
 
 .messages {
-    height: calc(100vh - 150px); /* Adjust based on header and input area height */
+    height: calc(100vh - 150px); /* Ensure height fits within view */
     overflow-y: auto;
     padding: 20px;
     box-sizing: border-box;
@@ -181,7 +178,6 @@ header h1 {
     background-color: #00006b;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
     .content {
         flex-direction: column;
@@ -210,11 +206,11 @@ header h1 {
     }
 
     .toggle-btn {
-        padding: 5px;
+        padding: 8px;
         font-size: 14px;
-        display: block;
     }
 }
+
 .show-sidebar {
     display: block;
 }
