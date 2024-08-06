@@ -6,15 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{room_name}} | Chat Room</title>
     <link rel="stylesheet" href="{% static 'chat/chat.css' %}">
+    <style>
+        #user-emoji {
+            align-items: center;
+            margin: auto;
+            padding: 7px 0;
+            color: blueviolet;
+            font-weight: bold;
+        }
+        #active {
+            font-size: 14px;
+            font-weight: normal;
+        }
+    </style>
 </head>
 <body>
     {{ user_name|json_script:"user-name" }}
     {{ room_name|json_script:"room-name" }}
 
     <div class="container">
+        <h2 id="user-emoji">Group: {{room_name}} <span id="active"></span></h2>
         <header>
             <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
-            <h1> {{room_name}} ({{user_name}})</h1>
+            <h1>User: {{user_name}}</h1>
         </header>
         <div class="content">
             <div class="sidebar" id="sidebar">

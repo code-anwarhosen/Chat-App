@@ -3,15 +3,19 @@ const roomName = JSON.parse(document.getElementById('room-name').textContent);
 
 const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 const chatSocket = new WebSocket(
-    `${protocol}//`
-    + window.location.host
-    + '/ws/chat/'
-    + roomName
-    + '/'
+    `${protocol}//${window.location.host}/ws/chat/${roomName}/${userName}/`
+    // ws://127.0.0.1:8000/ws/chat/Friends/Anwar/
 );
 
 chatSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
+
+    if (!data.message){ 
+        // if true that mean ChatConsumer jest sent user_count, means a new user just connected
+        console.log("user just conneted");
+        document.getElementById('active').innerHTML = 'Active: ' + data.user_count;
+        return;
+    }
 
     const now = new Date();
     const currentDate = now.toISOString().split('T')[0];
