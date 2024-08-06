@@ -2,11 +2,11 @@ import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = 'django-insecure-9upv*5xl167jgs!$2zyc%mqgr6rqc&so55=65kld1bn!1xt2f6'
-DEBUG = False
+SECRET_KEY = os.getenv("SECRET_KEY", 'django-insecure-9upv*5xl167jgs!$2zyc%mqgr6rqc&so55=65kld1bn!1xt2f6')
+DEBUG = os.getenv("DEBUG", True)
 
 ALLOWED_HOSTS = ['anwar-chatzone.onrender.com', '127.0.0.1']
-CSRF_TRUSTED_ORIGINS = ['https://anwar-chatzone.onrender.com', 'http://anwar-chatzone.onrender.com']
+# CSRF_TRUSTED_ORIGINS = ['https://anwar-chatzone.onrender.com', 'http://anwar-chatzone.onrender.com']
 
 INSTALLED_APPS = [
     'daphne',

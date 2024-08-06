@@ -11,8 +11,7 @@
     <div class="container">
         <div class="form-box">
             <h1>Join Group</h1>
-            <form action="chat-room/" method="post">
-                {% csrf_token %}
+            <form action="chat-room/" method="get">
                 <input type="text" name="username" placeholder="Your Name" required>
                 <select name="room_name" required>
                     <option class="room-option" selected="selected" disabled="disabled" value="">--Choose Group--</option>
