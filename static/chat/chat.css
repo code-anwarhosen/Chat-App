@@ -217,7 +217,7 @@ header h1 {
 
     .messages {
         padding: 10px;
-        height: calc(65vh - 20px); /* Adjust based on the overall viewport height */
+        height: calc(50vh - 1px); /* Adjust based on the overall viewport height */
     }
 }
 
