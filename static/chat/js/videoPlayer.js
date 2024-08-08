@@ -92,8 +92,8 @@ function adjustPlayerSize() {
     let mediaDiv = document.getElementById("player");
     if (window.matchMedia('(max-width: 768px)').matches) {
         mediaDiv.style.width = '100%';
-        mediaDiv.style.height = '25vh';
-        document.getElementsByClassName('messages')[0].style.height = '55vh';
+        mediaDiv.style.height = '30vh';
+        document.getElementsByClassName('messages')[0].style.height = '50vh';
     } else {
         mediaDiv.style.width = '100%';
         mediaDiv.style.height = '100%';
@@ -107,11 +107,11 @@ function onPlayerReady(event) {
 function onPlayerStateChange(event) {
     if (event.data == YT.PlayerState.PLAYING) {
         console.log('Video playing');
-        send_video_data('play');
+        send_video_data(action='play');
         startSeekCheck();
     } else if (event.data == YT.PlayerState.PAUSED) {
         console.log('Video paused');
-        send_video_data('pause');
+        send_video_data(action='pause');
         stopSeekCheck();
     } else if (event.data == YT.PlayerState.ENDED) {
         console.log('Video ended');
