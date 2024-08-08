@@ -7,7 +7,7 @@
     <title>{{room_name}} | Chat Room</title>
     <link rel="stylesheet" href="{% static 'chat/chat.css' %}">
     <style>
-        #user-emoji {
+        #group-info {
             align-items: center;
             margin: auto;
             padding: 7px 0;
@@ -19,12 +19,22 @@
             font-weight: bold;
         }
         #player {
-            height: 35%;
+            height: 100%;
             width: 100%;
             cursor: pointer;
+            background-color: pink;
+            margin-right: 5px;
+            border-radius: 10px;
         }
         #player:hover {
             cursor: pointer;
+        }
+        @media (max-width: 768px) {
+            #player {
+                height: 35%;
+                margin-right: 0px;
+                margin-bottom: 3px;
+            }
         }
     </style>
 </head>
@@ -33,11 +43,11 @@
     {{ room_name|json_script:"room-name" }}
 
     <script src="https://www.youtube.com/iframe_api"></script>
-    
+<div class="main-container">
+    <div id="player"></div>
     <div class="container">
-        <div id="player"></div>
 
-        <h2 id="user-emoji">Group: {{room_name}} <span id="active"></span></h2>
+        <h2 id="group-info">Group: {{room_name}} <span id="active"></span></h2>
         <header>
             <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
             <h1>User: {{user_name}}</h1>
@@ -62,7 +72,7 @@
             </div>
         </div>
     </div>
-
+</div>
     <script>
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('show-sidebar');

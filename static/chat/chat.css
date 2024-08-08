@@ -7,9 +7,15 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 99vh;
+    height: 100vh;
 }
-
+.main-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
 .container {
     width: 100vw;
     max-width: 1200px;
@@ -183,6 +189,13 @@ header h1 {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 99vh;
+    }
     .content {
         flex-direction: column;
     }
@@ -215,9 +228,10 @@ header h1 {
         display: block;
     }
 
+    /* two section in mobile screen, total height is 100. .message 65 and #player 35 */
     .messages {
+        height: 65%;
         padding: 10px;
-        height: calc(50vh - 1px); /* Adjust based on the overall viewport height */
     }
 }
 
