@@ -19,19 +19,28 @@
             font-weight: bold;
         }
         #player {
-            height: 100%;
-            width: 100%;
+            /* width: 100%;
+            height: 100%; */
+            width: 0;
+            height: 0;
             cursor: pointer;
             background-color: pink;
             margin-right: 5px;
             border-radius: 10px;
+        }
+        #player h1 {
+            text-align: center;
+            margin: 50vh auto;
         }
         #player:hover {
             cursor: pointer;
         }
         @media (max-width: 768px) {
             #player {
-                height: 35%;
+                /* width: 100%;
+                height: 35%; */
+                width: 0;
+                height: 0;
                 margin-right: 0px;
                 margin-bottom: 3px;
             }
@@ -44,7 +53,7 @@
 
     <script src="https://www.youtube.com/iframe_api"></script>
 <div class="main-container">
-    <div id="player"></div>
+    <div id="player"><h1>Media is not working...</h1></div>
     <div class="container">
 
         <h2 id="group-info">Group: {{room_name}} <span id="active"></span></h2>
@@ -55,11 +64,12 @@
         <div class="content">
             <div class="sidebar" id="sidebar">
                 <h2>Users:</h2>
-                <ul>
-                    <li>Joe</li>
-                    <li>Dan</li>
+                <ul id="userList">
+                    <!-- connected user list will apper here  -->
                 </ul>
-                <button class="leave-button">Leave</button>
+                <button class="leave-button" id="openVideoDiv">Open Media</button>
+                <button class="leave-button" id="closeVideoDiv">Close Media</button>
+                <button class="leave-button" id="leaveChat">Leave</button>
             </div>
             <div class="chat-area">
                 <div class="messages" id="chat-log">
@@ -73,12 +83,34 @@
         </div>
     </div>
 </div>
+
+
     <script>
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('show-sidebar');
-            console.log("toggle clicked");
+        }
+        
+        // open the youtube video player on button
+        document.getElementById("openVideoDiv").onclick = function (e) {
+            // make the button invisible 
+            document.getElementById("openVideoDiv").style.display = 'none';
+            toggleSidebar(); //close the sidebar
+
+            // Check if screen width is 768px or less
+            let mediaDiv = document.getElementById("player");
+            if (window.matchMedia('(max-width: 768px)').matches) {
+                mediaDiv.style.width = '100%';
+                mediaDiv.style.height = '25vh';
+
+                document.getElementsByClassName('messages')[0].style.height = '55vh';
+            } else {
+                mediaDiv.style.width = '100%'
+                mediaDiv.style.height = '100%';
+            }
         }
     </script>
+
+
     <script src="{% static 'chat/js/ws.js' %}"></script>
     <script src="{% static 'chat/js/videoPlayer.js' %}"></script>
 </body>

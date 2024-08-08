@@ -1,7 +1,7 @@
 const userName = JSON.parse(document.getElementById('user-name').textContent);
 const roomName = JSON.parse(document.getElementById('room-name').textContent);
 
-const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+let protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 const chatSocket = new WebSocket(
     `${protocol}//${window.location.host}/ws/chat/${roomName}/${userName}/`
     // ws://127.0.0.1:8000/ws/chat/Friends/Anwar/
@@ -10,10 +10,16 @@ const chatSocket = new WebSocket(
 chatSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
 
-    if (!data.message){ 
-        // if true that mean ChatConsumer jest sent user_count, means a new user just connected
-        console.log("user just conneted");
+    // if data.not_msg is true thats mean its not a chat message. its users info
+    if (data.not_msg === true){
+        console.log("User just conneted/disconnected");
         document.getElementById('active').innerHTML = 'Active: ' + data.user_count;
+        
+        const userList = document.getElementById('userList');
+        userList.innerHTML = "";
+        data.user_list.forEach(element => {
+            userList.innerHTML += `<li>${String(element)}</li>`;
+        });
         return;
     }
 
@@ -43,6 +49,20 @@ document.querySelector('#chat-message-input').onkeyup = function(e) {
         document.querySelector('#chat-message-submit').click();
     }
 };
+
+// leave websocket with close code 1000, which is normal close code
+document.getElementById('leaveChat').onclick = function (e) {
+    let yesNo = confirm("Are you sure?");
+    console.log(yesNo);
+    console.log(typeof(yesNo));
+
+    document.getElementById('leaveChat').textContent = "Leaving Chat...";
+
+    chatSocket.close(1000);
+    setTimeout(function() {
+        window.location.href = window.location.origin;
+    }, 800);  // 800ms delay
+}
 
 document.querySelector('#chat-message-submit').onclick = function(e) {
     const messageInputDom = document.querySelector('#chat-message-input');
