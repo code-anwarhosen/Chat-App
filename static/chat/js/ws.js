@@ -1,5 +1,5 @@
-const userName = JSON.parse(document.getElementById('user-name').textContent);
-const roomName = JSON.parse(document.getElementById('room-name').textContent);
+let userName = JSON.parse(document.getElementById('user-name').textContent);
+let roomName = JSON.parse(document.getElementById('room-name').textContent);
 
 let protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 const chatSocket = new WebSocket(
@@ -52,10 +52,10 @@ document.querySelector('#chat-message-input').onkeyup = function(e) {
 
 // leave websocket with close code 1000, which is normal close code
 document.getElementById('leaveChat').onclick = function (e) {
-    let yesNo = confirm("Are you sure?");
-    console.log(yesNo);
-    console.log(typeof(yesNo));
-
+    let yes = confirm("Are you sure?");
+    if (yes === false) {
+        return;
+    }
     document.getElementById('leaveChat').textContent = "Leaving Chat...";
 
     chatSocket.close(1000);

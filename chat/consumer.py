@@ -24,7 +24,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         await self.channel_layer.group_send(
             self.room_group_name, {
-                'type': 'users_info',
+                'type': 'send_users_info',
                 'user_count': connected_user[self.room_group_name],
                 'user_list': connected_user[userlist] 
             }
@@ -40,7 +40,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         await self.channel_layer.group_send(
             self.room_group_name, {
-                'type': 'users_info',
+                'type': 'send_users_info',
                 'user_count': connected_user[self.room_group_name],
                 'user_list': connected_user[userlist] 
             }
@@ -53,14 +53,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         await self.channel_layer.group_send(
             self.room_group_name, {
-                'type': 'chat_msg',
+                'type': 'send_chat_msg',
                 'user_name': user_name,
                 'msg': message,
             }
         )
     
     #helper functions
-    async def chat_msg(self, event):
+    async def send_chat_msg(self, event):
         user_name = event['user_name']
         msg = event['msg']
 
@@ -69,7 +69,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'message': msg,
         }))
     
-    async def users_info(self, event):
+    async def send_users_info(self, event):
         user_count = event['user_count']
         userlist = event['user_list']
 
@@ -79,10 +79,45 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'user_list': userlist
         }))
 
+
+
+
+
 class VideoConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        pass
+        self.room_name = self.scope['url_route']['kwargs']['room_name']
+        self.user_name = self.scope['url_route']['kwargs']['user_name']
+
+        self.room_name = self.room_name.replace(' ', '_')
+        self.room_group_name = f'video_{self.room_name}'
+        
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        await self.accept()
+        
     async def disconnect(self, close_code):
-        pass
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+
     async def receive(self, text_data):
-        pass
+        json_text_data = json.loads(text_data)
+
+        user_name = json_text_data['user_name']
+        action = json_text_data['action']
+        timestamp = json_text_data['timestamp']
+
+        await self.channel_layer.group_send(
+            self.room_group_name, {
+                'type': 'send_video_info',
+                'action': action,
+                'timestamp': timestamp
+            }
+        )
+    
+    # helper functions
+    async def send_video_info(self, event):
+        action = event['action']
+        timestamp = event['timestamp']
+
+        await self.send(text_data=json.dumps({
+            'action': action,
+            'timestamp': timestamp
+        }))
