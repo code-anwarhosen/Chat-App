@@ -19,10 +19,6 @@ videoSocket.onmessage = function(e) {
         return;
     }
 
-    if (data.user_name === userName) {
-        return;
-    }
-
     // console.log('msg from video socket');
     console.log('action : ' + String(data.action));
     console.log('timestamp : ' + data.timestamp);
