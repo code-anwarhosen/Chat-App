@@ -1,3 +1,6 @@
+let openMediaDiv = document.getElementById("openMedia");
+let closeMediaDiv = document.getElementById("closeVideoDiv");
+
 ///////////////Video Socket Section//////////////////////////
 const videoSocket = new WebSocket(
     `${protocol}//${window.location.host}/ws/video/${roomName}/${userName}/`
@@ -6,20 +9,32 @@ const videoSocket = new WebSocket(
 
 videoSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
+    if (data.videoID) {
+        LoadYouTubeVideo(data.videoID);
+        closeMediaDiv.style.display = 'block';
 
-    console.log('msg from video socket');
+        setTimeout(() => {
+            adjustPlayerSize();
+        }, 1000); //1s delay
+        return;
+    }
+
+    if (data.user_name === userName) {
+        return;
+    }
+
+    // console.log('msg from video socket');
     console.log('action : ' + String(data.action));
     console.log('timestamp : ' + data.timestamp);
-    if (data.timestamp) {
+    console.log('video id : ' + data.videoID);
+
+    if (data.action === 'seek' && data.timestamp) {
         seekVideo(data.timestamp);
-        playVideo();
-    }
-    else {
-        if (data.action === 'play') {
-            playVideo();
-        } else {
-            pauseVideo();
-        }
+        player.playVideo();
+    } else if (data.action === 'play' && player.getPlayerState() !== YT.PlayerState.PLAYING) {
+        player.playVideo();
+    } else if (data.action === 'pause' && player.getPlayerState() !== YT.PlayerState.PAUSED) {
+        player.pauseVideo();
     }
 };
 
@@ -27,11 +42,12 @@ videoSocket.onclose = function(e) {
     console.error('Video socket closed unexpectedly');
 };
 
-function send_video_data(action='', timestamp=null) {
+function send_video_data(action='', timestamp=null, videoID=null) {
     videoSocket.send(JSON.stringify({
         'user_name': userName,
         'action': action,
-        'timestamp': timestamp
+        'timestamp': timestamp,
+        'videoID': videoID
     }));
 }
 
@@ -39,11 +55,14 @@ function send_video_data(action='', timestamp=null) {
 //////////Youtube media player api///////////
 var player;
 var lastTime = 0;
-var checkInterval = 500; // Check every 500 milliseconds
 var checkSeekInterval;
 
 function onYouTubeIframeAPIReady() {
     // This function is called automatically when the API is ready
+}
+
+function onPlayerReady(event) {
+    console.log('Player is ready.');
 }
 
 function LoadYouTubeVideo(videoID) {
@@ -63,18 +82,72 @@ function LoadYouTubeVideo(videoID) {
     }
 }
 
-document.getElementById("openMedia").onclick = function () {
-    document.getElementById("openMedia").textContent = "Select another video";
+function startSeekCheck() {
+    checkSeekInterval = setInterval(checkSeek, 500); // 200ms
+}
+
+function stopSeekCheck() {
+    clearInterval(checkSeekInterval);
+}
+
+let lastCheckTime = 0;
+function checkSeek() {
+    var currentTime = player.getCurrentTime();
+    const now = new Date().getTime();
+    const expectedTime = lastTime + (now - lastCheckTime) / 1000; // Convert milliseconds to seconds
+    
+    // Check if the difference is greater than the seek threshold
+    if (Math.abs(currentTime - expectedTime) > 100) { // if differ 50ms
+        send_video_data('seek', currentTime);
+        console.log('Video seeked to: ' + currentTime + ' seconds');
+    }
+    lastTime = currentTime;
+    lastCheckTime = now;
+}
+
+let lastAction = '';
+function onPlayerStateChange(event) {
+    if (event.data == YT.PlayerState.PLAYING && lastAction !== 'play') {
+        lastAction = 'play';
+        send_video_data('play');
+        startSeekCheck();
+
+    } else if (event.data == YT.PlayerState.PAUSED && lastAction !== 'pause') {
+        lastAction = 'pause';
+        send_video_data('pause');
+        stopSeekCheck();
+
+    } else if (event.data == YT.PlayerState.ENDED) {
+        lastAction = 'ended';
+        stopSeekCheck();
+    }
+}
+
+closeMediaDiv.onclick = function () {
+    closeMediaDiv.style.display = 'none';
+    videoSocket.close(1000);
+
+    let mediaDiv = document.getElementById("player");
+    mediaDiv.style.width = '0';
+    mediaDiv.style.height = '0';
+    if (window.matchMedia('(max-width: 768px)').matches) {
+        document.getElementsByClassName('messages')[0].style.height = '75vh';
+    } else {
+        document.getElementsByClassName('messages')[0].style.height = '100%';
+    }
+}
+
+openMediaDiv.onclick = function () {
+    toggleSidebar(); // close the sidebar
+    openMediaDiv.textContent = "Select another video";
     let url = prompt("Enter the YouTube video link.");
     
     let videoId = extractVideoId(url);
     if (videoId) {
-        LoadYouTubeVideo(videoId);
-        adjustPlayerSize(); // Adjust the player size based on screen width
+        send_video_data('', null, videoId);
     } else {
         alert("Invalid URL");
     }
-    toggleSidebar(); // close the sidebar
 };
 
 function extractVideoId(url) {
@@ -98,51 +171,6 @@ function adjustPlayerSize() {
         mediaDiv.style.width = '100%';
         mediaDiv.style.height = '100%';
     }
-}
-
-function onPlayerReady(event) {
-    console.log('Player is ready.');
-}
-
-function onPlayerStateChange(event) {
-    if (event.data == YT.PlayerState.PLAYING) {
-        console.log('Video playing');
-        send_video_data(action='play');
-        startSeekCheck();
-    } else if (event.data == YT.PlayerState.PAUSED) {
-        console.log('Video paused');
-        send_video_data(action='pause');
-        stopSeekCheck();
-    } else if (event.data == YT.PlayerState.ENDED) {
-        console.log('Video ended');
-        stopSeekCheck();
-    }
-}
-
-function startSeekCheck() {
-    checkSeekInterval = setInterval(checkSeek, checkInterval);
-}
-
-function stopSeekCheck() {
-    clearInterval(checkSeekInterval);
-}
-
-function checkSeek() {
-    var currentTime = player.getCurrentTime();
-    if (Math.abs(currentTime - lastTime) > 1) { 
-        let TimeStamp = Math.floor(currentTime);
-        send_video_data('seek', TimeStamp);
-        console.log('Video seeked to: ' + TimeStamp + ' seconds');
-    }
-    lastTime = currentTime;
-}
-
-function playVideo() {
-    player.playVideo();
-}
-
-function pauseVideo() {
-    player.pauseVideo();
 }
 
 function seekVideo(seconds) {

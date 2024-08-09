@@ -100,24 +100,30 @@ class VideoConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         json_text_data = json.loads(text_data)
 
-        user_name = json_text_data['user_name']
         action = json_text_data['action']
         timestamp = json_text_data['timestamp']
+        videoID = json_text_data['videoID']
 
         await self.channel_layer.group_send(
             self.room_group_name, {
                 'type': 'send_video_info',
+                'user_name': self.user_name,
                 'action': action,
-                'timestamp': timestamp
+                'timestamp': timestamp,
+                'videoID': videoID
             }
         )
     
     # helper functions
     async def send_video_info(self, event):
+        user_name = event['user_name']
         action = event['action']
         timestamp = event['timestamp']
+        videoID = event['videoID']
 
         await self.send(text_data=json.dumps({
+            'user_name': user_name,
             'action': action,
-            'timestamp': timestamp
+            'timestamp': timestamp,
+            'videoID': videoID
         }))
