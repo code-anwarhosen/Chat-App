@@ -26,7 +26,6 @@ videoSocket.onmessage = function(e) {
 
     if (data.timestamp && data.action === 'seek') {
         seekVideo(data.timestamp);
-        player.playVideo();
     } else if (data.action === 'play' && player.getPlayerState() !== YT.PlayerState.PLAYING) {
         player.playVideo();
     } else if (data.action === 'pause' && player.getPlayerState() !== YT.PlayerState.PAUSED) {
