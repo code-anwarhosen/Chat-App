@@ -7,8 +7,10 @@ const videoSocket = new WebSocket(
     // ws://127.0.0.1:8000/ws/video/Friends/Anwar/
 );
 
+// Handle messages from WebSocket and perform actions in silent mode
 videoSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
+
     if (data.videoID) {
         LoadYouTubeVideo(data.videoID);
         closeMediaDiv.style.display = 'block';
@@ -19,16 +21,20 @@ videoSocket.onmessage = function(e) {
         return;
     }
 
-    // console.log('msg from video socket');
     console.log('action : ' + String(data.action));
     console.log('timestamp : ' + data.timestamp);
     console.log('video id : ' + data.videoID);
 
     if (data.timestamp && data.action === 'seek') {
+        isSilentMode = true; // Prevent rebroadcasting
         seekVideo(data.timestamp);
+
     } else if (data.action === 'play' && player.getPlayerState() !== YT.PlayerState.PLAYING) {
+        isSilentMode = true; // Prevent rebroadcasting
         player.playVideo();
+
     } else if (data.action === 'pause' && player.getPlayerState() !== YT.PlayerState.PAUSED) {
+        isSilentMode = true; // Prevent rebroadcasting
         player.pauseVideo();
     }
 };
@@ -37,7 +43,10 @@ videoSocket.onclose = function(e) {
     console.error('Video socket closed unexpectedly');
 };
 
-function send_video_data(action='', timestamp=null, videoID=null) {
+let isSilentMode = false;
+function send_video_data(action='', timestamp=null, videoID=null, silent=false) {
+    if (silent) return; // Do not broadcast if in silent mode
+
     videoSocket.send(JSON.stringify({
         'user_name': userName,
         'action': action,
@@ -87,30 +96,39 @@ function stopSeekCheck() {
 
 let lastCheckTime = 0;
 function checkSeek() {
-    var currentTime = player.getCurrentTime();
+    var currentTime = Math.floor(player.getCurrentTime()); // Convert to whole seconds
     const now = new Date().getTime();
-    const expectedTime = lastTime + (now - lastCheckTime) / 1000; // Convert milliseconds to seconds
+    const expectedTime = Math.floor(lastTime + (now - lastCheckTime) / 1000); // Convert milliseconds to seconds and floor it
     
-    // Check if the difference is greater than the seek threshold
-    if (Math.abs(currentTime - expectedTime) > 10) { // if differ 50ms
-        send_video_data('seek', currentTime);
+    // Calculate the difference between current time and expected time
+    const timeDifference = Math.abs(currentTime - expectedTime);
+
+    // Check if the difference is significant (e.g., greater than 1 second)
+    if (timeDifference > 1) {
+        send_video_data('seek', currentTime, null, isSilentMode);
         console.log('Video seeked to: ' + currentTime + ' seconds');
+
+        // Update lastTime and lastCheckTime to the new synchronized values
+        lastTime = currentTime;
+        lastCheckTime = now;
+
+        isSilentMode = false; // Reset silent mode after handling
     }
-    lastTime = currentTime;
-    lastCheckTime = now;
 }
 
 let lastAction = '';
 function onPlayerStateChange(event) {
     if (event.data == YT.PlayerState.PLAYING && lastAction !== 'play') {
         lastAction = 'play';
-        send_video_data('play');
+        send_video_data('play', null, null, isSilentMode);
         startSeekCheck();
+        isSilentMode = false; // Reset silent mode after handling
 
     } else if (event.data == YT.PlayerState.PAUSED && lastAction !== 'pause') {
         lastAction = 'pause';
-        send_video_data('pause');
+        send_video_data('pause', null, null, isSilentMode);
         stopSeekCheck();
+        isSilentMode = false;
 
     } else if (event.data == YT.PlayerState.ENDED) {
         lastAction = 'ended';
