@@ -24,7 +24,7 @@ videoSocket.onmessage = function(e) {
     console.log('timestamp : ' + data.timestamp);
     console.log('video id : ' + data.videoID);
 
-    if (data.action === 'seek' && data.timestamp !== null) {
+    if (data.timestamp && data.action === 'seek') {
         seekVideo(data.timestamp);
         player.playVideo();
     } else if (data.action === 'play' && player.getPlayerState() !== YT.PlayerState.PLAYING) {
