@@ -24,7 +24,7 @@ videoSocket.onmessage = function(e) {
     console.log('timestamp : ' + data.timestamp);
     console.log('video id : ' + data.videoID);
 
-    if (data.action === 'seek' && data.timestamp) {
+    if (data.action === 'seek' && data.timestamp !== null) {
         seekVideo(data.timestamp);
         player.playVideo();
     } else if (data.action === 'play' && player.getPlayerState() !== YT.PlayerState.PLAYING) {
@@ -93,7 +93,7 @@ function checkSeek() {
     const expectedTime = lastTime + (now - lastCheckTime) / 1000; // Convert milliseconds to seconds
     
     // Check if the difference is greater than the seek threshold
-    if (Math.abs(currentTime - expectedTime) > 100) { // if differ 50ms
+    if (Math.abs(currentTime - expectedTime) > 10) { // if differ 50ms
         send_video_data('seek', currentTime);
         console.log('Video seeked to: ' + currentTime + ' seconds');
     }
